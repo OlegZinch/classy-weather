@@ -13,7 +13,6 @@ function getWeatherIcon(wmoCode) {
     [[95], '🌩'],
     [[96, 99], '⛈'],
   ])
-  console.log(icons)
   const arr = [...icons.keys()].find((key) => key.includes(wmoCode))
   if (!arr) return 'NOT FOUND'
   return icons.get(arr)

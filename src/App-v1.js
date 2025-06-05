@@ -10,14 +10,18 @@ function convertToFlag(countryCode) {
 }
 
 class App extends Component {
-  state = {
-    location: 'dublin',
-    displayLocation: '',
-    weather: {},
-    isLoading: false,
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      location: 'dublin',
+      displayLocation: '',
+      weather: {},
+      isLoading: false,
+    }
   }
 
-  fetchWeather = async () => {
+  async fetchWeather() {
     try {
       this.setState({ isLoading: true })
       // 1) Getting location (geocoding)
@@ -25,6 +29,7 @@ class App extends Component {
         `https://geocoding-api.open-meteo.com/v1/search?name=${this.state.location}`
       )
       const geoData = await geoRes.json()
+      console.log(geoData)
 
       if (!geoData.results) throw new Error('Location not found')
 
@@ -61,7 +66,7 @@ class App extends Component {
             onChange={(e) => this.setState({ location: e.target.value })}
           />
         </div>
-        <button onClick={this.fetchWeather}>Get weather</button>
+        <button onClick={this.fetchWeather.bind(this)}>Get weather</button>
         {this.state.isLoading && <p className='loader'>Loading...</p>}
 
         {this.state.weather.weathercode && (
