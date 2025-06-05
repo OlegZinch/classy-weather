@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import Weather from './Weather'
+import Input from './Input'
 
 function convertToFlag(countryCode) {
   const codePoints = countryCode
@@ -11,13 +12,18 @@ function convertToFlag(countryCode) {
 
 class App extends Component {
   state = {
-    location: 'dublin',
+    location: '',
     displayLocation: '',
     weather: {},
     isLoading: false,
   }
 
   fetchWeather = async () => {
+    if (this.state.location.length < 3) {
+      this.setState({ weather: {} })
+      return
+    }
+
     try {
       this.setState({ isLoading: true })
       // 1) Getting location (geocoding)
@@ -43,9 +49,27 @@ class App extends Component {
 
       this.setState({ weather: weatherData.daily })
     } catch (err) {
-      console.err(err)
+      console.error(err)
     } finally {
       this.setState({ isLoading: false })
+    }
+  }
+
+  setLocation = (e) => {
+    this.setState({ location: e.target.value })
+  }
+
+  // useEffect []
+  componentDidMount() {
+    this.setState({ location: localStorage.getItem('location') || '' })
+  }
+
+  // useEffect [location]
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.location !== prevState.location) {
+      this.fetchWeather()
+
+      localStorage.setItem('location', this.state.location)
     }
   }
 
@@ -53,15 +77,10 @@ class App extends Component {
     return (
       <div className='app'>
         <h1>Classy Weather</h1>
-        <div>
-          <input
-            type='text'
-            placeholder='Search from location...'
-            value={this.state.location}
-            onChange={(e) => this.setState({ location: e.target.value })}
-          />
-        </div>
-        <button onClick={this.fetchWeather}>Get weather</button>
+        <Input
+          location={this.state.location}
+          onChangeLocation={this.setLocation}
+        />
         {this.state.isLoading && <p className='loader'>Loading...</p>}
 
         {this.state.weather.weathercode && (
